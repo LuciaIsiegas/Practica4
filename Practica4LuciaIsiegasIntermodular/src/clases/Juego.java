@@ -1,5 +1,10 @@
 package clases;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -146,6 +151,30 @@ public class Juego {
 			jugador.resetear();
 		} while (seguir == 's' || seguir == 'S');
 		System.out.println(FIN_JUEGO);
+	}
+	
+	public void mejorPuntuacion() {
+		File archivo = new File("ficheros/mejorPuntuacion.txt");
+		PrintWriter archivoEscribir = null;
+		Scanner sc = null;
+		
+		
+		try {
+			if (!archivo.exists()) {
+				archivo.createNewFile();
+			}
+			archivoEscribir = new PrintWriter(archivo);
+			sc = new Scanner(archivo);
+			
+			if (!sc.hasNext()) {
+				archivoEscribir.println("Nombre: " + jugador.getNombre() + ", rondas superadas: " + ronda);
+			}
+		} catch (IOException e) {
+			System.err.println("El archivo no existe o no se puede acceder a él.");
+		} finally {
+			archivoEscribir.close();
+		}
+		
 	}
 
 	public ArrayList<Enemigo> getEnemigos() {
