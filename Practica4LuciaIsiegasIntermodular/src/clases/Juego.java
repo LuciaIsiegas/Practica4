@@ -2,6 +2,7 @@ package clases;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,9 +22,12 @@ public class Juego {
 	private Personaje jugador;
 	private int nRondas;
 	private int ronda;
+	private File archivo;
+	
 
 	private static final String BARRAS = "*****************************************************************";
-	private static final String N_RONDAS = "Bienvenido al juego:\n" + "¿Cuántas rondas quieres jugar? ";
+	private static final String BIENVENIDO = "Bienvenido al juego:";
+	private static final String N_RONDAS = "¿Cuántas rondas quieres jugar? ";
 	private static final String MOSTRAR_RONDA = "Ronda: %d/%d \nEstás luchando contra: %s \nEres: %s \n";
 	private static final String PIDE_NOMBRE = "Introduce tu nombre: ";
 	private static final String ELIGE_CLASE = "Elige tu clase:\n" + "1. Mago\n" + "2. Guerrero\n" + "Elige (1, 2): ";
@@ -38,6 +42,7 @@ public class Juego {
 
 	public Juego() {
 		enemigos = new ArrayList<Enemigo>();
+		archivo = new File("mejorPuntuacion.txt");
 	}
 
 	public static String nombreAleatorio() {
@@ -45,14 +50,23 @@ public class Juego {
 	}
 
 	public void iniciarJuego(Scanner sc) {
-		System.out.println(BARRAS);
+		// REINICIAMOS RONDAS Y ENEMIGOS
 		ronda = 0;
-		// MI CODIGO
 		enemigos.clear();
+		
+		// MOSTRAMOS INTRO
+		System.out.println(BARRAS);
+		System.out.println(BIENVENIDO);
+		mostrarMejorPuntuacion(); // MEJOR PUNTUACION EN CASO DE QUE EXISTA
+		System.out.println();
+		
+		// PEDIMOS NÚMERO DE RONDAS, NOMBRE Y PERSONAJE
 		nRondas = Utilidades.getInt(N_RONDAS, sc);
 		String nombre = Utilidades.getString(PIDE_NOMBRE, sc);
 		elegirClase(nombre, sc);
-		//
+		System.out.println();
+		
+		// GENERAMOS ENEMIGOS
 		for (int i = 0; i < nRondas; i++) {
 			Enemigo enemigo = new Enemigo();
 			enemigo.iniciarEnemigo(nombreAleatorio());
@@ -86,7 +100,9 @@ public class Juego {
 		return enemigos.isEmpty();
 	}
 
-	// MI CODIGO
+	//// MI CODIGO ////
+	
+	// NOS PERMITE ESCOGER SÓLO ENTRE DOS PERSONAJES Y LOS INICIALIZA
 	public void elegirClase(String nombre, Scanner sc) {
 		int opcion = Utilidades.elegirEntre(ELIGE_CLASE, 1, 2, sc);
 		switch (opcion) {
@@ -97,7 +113,7 @@ public class Juego {
 			nuevoGuerrero(nombre);
 		}
 	}
-
+	
 	public void mostrarRonda() {
 		System.out.printf(MOSTRAR_RONDA, (ronda + 1), nRondas, getSiguiente(), jugador);
 	}
@@ -139,6 +155,7 @@ public class Juego {
 			if (terminarRonda()) {
 				System.out.println(ENEMIGO_VENCIDO);
 			}
+			System.out.println();
 		} while (!esFinalJuego() && !jugador.muerto());
 		System.out.println(jugador.muerto() ? PERDIDO : GANADO);
 	}
@@ -147,34 +164,64 @@ public class Juego {
 		char seguir = 0;
 		do {
 			jugarPartida(sc);
+			escribirMejorPuntuacion();
 			seguir = Utilidades.getCharSiNo(VOLVER_A_JUGAR, sc);
 			jugador.resetear();
 		} while (seguir == 's' || seguir == 'S');
 		System.out.println(FIN_JUEGO);
 	}
 	
-	public void mejorPuntuacion() {
-		File archivo = new File("ficheros/mejorPuntuacion.txt");
-		PrintWriter archivoEscribir = null;
-		Scanner sc = null;
-		
-		
-		try {
-			if (!archivo.exists()) {
-				archivo.createNewFile();
+	public void mostrarMejorPuntuacion() {
+		if (archivo.exists()) {
+			Scanner sc = null;
+			try {
+				sc = new Scanner(archivo);
+				while (sc.hasNextLine()) {
+					System.out.println("Record actual -> " + sc.nextLine());
+				}
+			} catch (FileNotFoundException e) {
+				System.out.println("EL ARCHIVO NO EXISTE");
+			} finally {
+				sc.close();
 			}
-			archivoEscribir = new PrintWriter(archivo);
-			sc = new Scanner(archivo);
-			
-			if (!sc.hasNext()) {
-				archivoEscribir.println("Nombre: " + jugador.getNombre() + ", rondas superadas: " + ronda);
-			}
-		} catch (IOException e) {
-			System.err.println("El archivo no existe o no se puede acceder a él.");
-		} finally {
-			archivoEscribir.close();
 		}
-		
+	}
+	
+	public void escribirMejorPuntuacion() {
+		Scanner sc = null;
+		PrintWriter archivoEscribir = null;
+				
+		try {
+			// NO HACE NADA SI EL ARCHIVO YA EXISTE
+			archivo.createNewFile();
+			
+			// PRIMERO LEEMOS EL CONTENIDO, PORQUE EL ORDEN CONTRARIO LEERÍA UN ARCHIVO VACÍO
+			int recordActual = 0;
+			sc = new Scanner(archivo);
+			while(sc.hasNext()) {
+				if (sc.hasNextInt()) {
+			        recordActual = sc.nextInt();
+				} else {
+					String cadenaPerdida = sc.next(); // IGNORAMOS LO QUE SEAN ENTEROS
+				}
+			}
+			
+			// AHORA SOBREESCRIBIMOS EN EL ARCHIVO SÓLO SI SE SUPERA EL RECORD
+			if (ronda > recordActual) {
+				archivoEscribir = new PrintWriter(archivo);
+				archivoEscribir.println("Nombre: " + jugador.getNombre() + ", rondas superadas: " + ronda);
+				System.out.println("ENHORABUENA!!! Record Superado!"); // AVISAMOS DE QUE SE HA SUPERADO EL RECORD
+			} 
+			
+		} catch (IOException e) {
+			System.err.println("NO SE PUEDE CREAR ARCHIVO");
+		} finally {
+			if (archivoEscribir != null) {
+				archivoEscribir.close();
+			}
+			sc.close();
+		}
+
 	}
 
 	public ArrayList<Enemigo> getEnemigos() {
