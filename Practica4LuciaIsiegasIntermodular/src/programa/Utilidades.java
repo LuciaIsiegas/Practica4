@@ -25,7 +25,7 @@ public class Utilidades {
 		do {
 			aux = getString(msg, sc);
 		} while (!validSiNo(aux));
-		return aux.charAt(0);
+		return aux.toLowerCase().charAt(0);
 	}
 
 	// VALIDO PARA CUALQUIER INT
