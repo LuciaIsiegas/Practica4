@@ -23,8 +23,10 @@ public class Juego implements Serializable {
 	private Personaje jugador;
 	private int nRondas;
 	private int ronda;
+	//------------------NUEVO------------------------------------------------
 	private File archivo;
 	private File partidasGuardadas;
+	//-----------------------------------------------------------------------
 
 	private static final String BARRAS = "*****************************************************************";
 	private static final String BIENVENIDO = "Bienvenido al juego:";
@@ -44,8 +46,10 @@ public class Juego implements Serializable {
 
 	public Juego() {
 		enemigos = new ArrayList<Enemigo>();
+		//------------------NUEVO------------------------------------------------
 		archivo = new File("mejorPuntuacion.txt");
 		partidasGuardadas = new File("partidaGuardada.txt");
+		//-----------------------------------------------------------------------
 	}
 
 	public static String nombreAleatorio() {
@@ -59,10 +63,12 @@ public class Juego implements Serializable {
 		mostrarMejorPuntuacion(); // MEJOR PUNTUACION EN CASO DE QUE EXISTA
 		System.out.println();
 
+		//------------------NUEVO------------------------------------------------
 		// CARGAR PARTIDA
 		if (cargarPartida() && Utilidades.getCharSiNo("¿Cargar partida guardada? (s/n): ", sc) == 's') {
 			cargarPartida();
 			System.out.println("PARTIDA CARGADA: ");
+			//-----------------------------------------------------------------------
 		} else {
 			// REINICIAMOS RONDAS Y ENEMIGOS
 			ronda = 0;
@@ -138,6 +144,7 @@ public class Juego implements Serializable {
 		System.out.println(jugador.getNombre() + CURA);
 	}
 
+	//------------------NUEVO-------------------------------------------------------------------------
 	public void guardarPartida() {
 		try {
 			// CREAMOS EL ARCHIVO EN CASO DE QUE NO EXISTA
@@ -154,7 +161,9 @@ public class Juego implements Serializable {
 		}
 
 	}
+	//-------------------------------------------------------------------------------------------------
 
+	//------------------NUEVO---------------------------------------------------------------------------
 	public boolean cargarPartida() {
 		Juego juegoActual = null;
 		try {
@@ -179,7 +188,9 @@ public class Juego implements Serializable {
 
 		return juegoActual != null;
 	}
+	//-------------------------------------------------------------------------------------------------
 
+	//------------------NUEVO---------------------------------------------------------------------------
 	public void borrarPartidaGuardada() {
 		try {
 			// CREAMOS UN OBJETO OUTPUTSTREAM PARA ESCRIBIR SOBRE EL FICHERO
@@ -192,6 +203,7 @@ public class Juego implements Serializable {
 			System.err.println("NO SE PUEDE CREAR ARCHIVO");
 		}
 	}
+	//-------------------------------------------------------------------------------------------------
 
 	public void enemigoAtaca() {
 		getSiguiente().atacar(jugador);
@@ -246,6 +258,7 @@ public class Juego implements Serializable {
 		System.out.println(FIN_JUEGO);
 	}
 
+	//------------------NUEVO---------------------------------------------------------------------------
 	public void mostrarMejorPuntuacion() {
 		if (archivo.exists()) {
 			Scanner sc = null;
@@ -261,7 +274,9 @@ public class Juego implements Serializable {
 			}
 		}
 	}
+	//-------------------------------------------------------------------------------------------------
 
+	//------------------NUEVO---------------------------------------------------------------------------
 	public void escribirMejorPuntuacion() {
 		Scanner sc = null;
 		PrintWriter archivoEscribir = null;
@@ -299,6 +314,7 @@ public class Juego implements Serializable {
 		}
 
 	}
+	//-------------------------------------------------------------------------------------------------
 
 	public ArrayList<Enemigo> getEnemigos() {
 		return enemigos;
