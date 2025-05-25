@@ -32,5 +32,13 @@ public class Guerrero extends Personaje implements Jugable {
 	public String toString() {
 		return super.toString() + "; Pociones: " + pociones;
 	}
+	
+	public int getPociones() {
+		return pociones;
+	}
+
+	public void setPociones(int pociones) {
+		this.pociones = pociones;
+	}
 
 }
