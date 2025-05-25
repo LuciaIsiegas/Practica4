@@ -348,4 +348,12 @@ public class Juego implements Serializable {
 		this.ronda = ronda;
 	}
 
+	public static String[] getNombreEnemigos() {
+		return nombreEnemigos;
+	}
+
+	public static void setNombreEnemigos(String[] nombreEnemigos) {
+		Juego.nombreEnemigos = nombreEnemigos;
+	}
+
 }
