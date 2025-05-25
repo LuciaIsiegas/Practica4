@@ -14,7 +14,7 @@ public class Mago extends Personaje implements Jugable {
 		super(nombre, vida, FUERZA_MAGIA, DEFENSA);
 		this.magia = MAGIA;
 	}
-
+	
 	@Override
 	public void atacar(Personaje otro) {
 		int damage = 0;
