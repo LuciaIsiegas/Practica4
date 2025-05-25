@@ -6,9 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -32,6 +35,9 @@ public class JuegoTest {
 //	static String[] nombreEnemigos = {"El Decapitador", "Furia Centinela", "Dama Tóxica"};
 	static ArrayList<Enemigo> enemigos;
 	
+	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final PrintStream originalOut = System.out;
+    private File archivoPuntuacion;
 	private static final String JUGADOR_TEST = "jugador test";
 	
 	@BeforeEach
@@ -45,12 +51,20 @@ public class JuegoTest {
 		enemigos.add(enemigo);
 		enemigos.add(enemigo2);
 		
+		 System.setOut(new PrintStream(outContent));
+	     archivoPuntuacion = new File("mejorPuntuacion.txt");
+		
 	}
 	
 	@AfterEach
 	void eleminar() throws IOException {
-		new File("mejorPuntuacion.txt").delete();
+//		new File("mejorPuntuacion.txt").delete();
         new File("partidaGuardada.txt").delete();
+        
+        System.setOut(originalOut);
+        if (archivoPuntuacion.exists()) {
+            archivoPuntuacion.delete();
+        }
 	}
 	
 	@Test
@@ -218,25 +232,6 @@ public class JuegoTest {
 	}
 	
 	@Test
-    void mostrarYEscribirMejorPuntuacionTest() throws IOException {
-        juego.mostrarMejorPuntuacion();
-        
-        juego.setRonda(3);
-        juego.nuevoGuerrero(JUGADOR_TEST);
-        
-        juego.escribirMejorPuntuacion();
-        
-        File archivo = new File("mejorPuntuacion.txt");
-        assertTrue(archivo.exists());
-        
-        BufferedReader leerArchivo = new BufferedReader(new FileReader(archivo));
-        String linea = leerArchivo.readLine();
-        assertTrue(linea.contains(JUGADOR_TEST));
-        assertTrue(linea.contains("3"));
-        leerArchivo.close();
-    }
-	
-	@Test
 	void enemigoAtacaTest() {
 		juego.nuevoMago(JUGADOR_TEST);
 		Mago magoCreado = (Mago) juego.getJugador();
@@ -265,5 +260,80 @@ public class JuegoTest {
 //		
 //		assertEquals(5, enemigo.getVida());
 //	}
+	
+	@Test
+    void escribirMejorPuntuacionTest() throws IOException {
+        juego.setRonda(3);
+        juego.nuevoGuerrero(JUGADOR_TEST);
+        
+        juego.escribirMejorPuntuacion();
+        
+        File archivo = new File("mejorPuntuacion.txt");
+        assertTrue(archivo.exists());
+        
+        BufferedReader leerArchivo = new BufferedReader(new FileReader(archivo));
+        String linea = leerArchivo.readLine();
+        assertTrue(linea.contains(JUGADOR_TEST));
+        assertTrue(linea.contains("3"));
+        leerArchivo.close();
+    }
+	
+	@Test
+	void mostrarMejorPuntuacionArchivoNoExisteTest() {
+        if (archivoPuntuacion.exists()) {
+            archivoPuntuacion.delete();
+        }
+        
+        juego.mostrarMejorPuntuacion();
+        
+        assertTrue(true);
+    }
+
+	@Test
+    void mostrarMejorPuntuacionArchivoVacioTest() throws IOException {
+        archivoPuntuacion.createNewFile();
+        
+        juego.mostrarMejorPuntuacion();
+        
+        assertTrue(true);
+    }
+
+    @Test
+    void mostrarMejorPuntuacionConDatosTest() throws IOException {
+        try (PrintWriter escribirArchivo = new PrintWriter(archivoPuntuacion)) {
+            escribirArchivo.println("Nombre: Jugador1, rondas superadas: 5");
+        }
+        
+        juego.mostrarMejorPuntuacion();
+        
+        String salida = outContent.toString();
+        assertTrue(salida.contains("Record actual"));
+        assertTrue(salida.contains("Jugador1"));
+        assertTrue(salida.contains("5"));
+    }
+
+    @Test
+    void mostrarMejorPuntuacionFormatoIncorrectoTest() throws IOException {
+        try (PrintWriter escribirArchivo = new PrintWriter(archivoPuntuacion)) {
+            escribirArchivo.println("Este no es el formato esperado");
+        }
+        
+        juego.mostrarMejorPuntuacion();
+        
+        assertTrue(true);
+    }
+
+    @Test
+    void mostrarMejorPuntuacionMultiplesLineasTest() throws IOException {
+        try (PrintWriter escribirArchivo = new PrintWriter(archivoPuntuacion)) {
+            escribirArchivo.println("Nombre: Jugador1, rondas superadas: 5");
+            escribirArchivo.println("Nombre: Jugador2, rondas superadas: 10");
+        }
+        
+        juego.mostrarMejorPuntuacion();
+        
+        String salida = outContent.toString();
+        assertTrue(salida.contains("Jugador1") || salida.contains("Jugador2"));
+    }
 	
 }
