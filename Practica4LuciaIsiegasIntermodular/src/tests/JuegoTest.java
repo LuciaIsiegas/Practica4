@@ -245,24 +245,29 @@ public class JuegoTest {
 	
 	@Test
 	void jugarPartidaTest() {
-		juego.nuevoMago(JUGADOR_TEST);
-		Mago magoCreado = (Mago) juego.getJugador();
-		magoCreado.setVida(100);
-		magoCreado.setDefensa(5);
+		String input = "1\n";
+		Scanner sc = new Scanner(input);
 		
-		// REALIZAR ATAQUE
-		String input = "1";
-		Scanner sc1 = new Scanner(input);
-		realizarAtaqueTest();
-		sc1.close();
+		juego.nuevoGuerrero(JUGADOR_TEST);
+		Guerrero guerreroCreado = (Guerrero) juego.getJugador();
+		guerreroCreado.setVida(100);
+		guerreroCreado.setAtaque(100);
 		
-		// REALIZAR CURA
-		input = "2";
-		Scanner sc2 = new Scanner(input);
-		realizarCuraTest();
-
+		enemigo.setVida(95);
+		enemigo.setDefensa(5);
 		
-		
+		juego.jugarPartida(sc);
+		assertEquals(0, enemigo.getVida());
+//		// REALIZAR ATAQUE
+//		String input = "1";
+//		Scanner sc1 = new Scanner(input);
+//		realizarAtaqueTest();
+//		sc1.close();
+//		
+//		// REALIZAR CURA
+//		input = "2";
+//		Scanner sc2 = new Scanner(input);
+//		realizarCuraTest();
 		
 	}
 	
