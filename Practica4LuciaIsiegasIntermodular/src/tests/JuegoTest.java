@@ -247,12 +247,15 @@ public class JuegoTest {
 	
 //	@Test
 //	void jugarTest() {
-//		String input = "1\nTest\n2\n1\nn\n";
+//		String input = "1\njugador test\n2\n1\nno\n";
 //	    Scanner sc = new Scanner(input);
+//
+//		juego.nuevoGuerrero(JUGADOR_TEST);
+//		juego.getJugador().setVida(100);
+//		assertFalse(jugador.muerto());
 //		
-//		enemigo.setVida(100);
-//		enemigo.setDefensa(5);
-//		enemigo.setAtaque(10);
+//		enemigo.setVida(10);
+//		enemigo.setDefensa(0);
 //		
 //		juego.jugar(sc);
 //		juego.getJugador().setAtaque(100);
