@@ -23,10 +23,10 @@ public class Juego implements Serializable {
 	private Personaje jugador;
 	private int nRondas;
 	private int ronda;
-	//------------------NUEVO------------------------------------------------
+	// ------------------NUEVO------------------------------------------------
 	private File archivo;
 	private File partidasGuardadas;
-	//-----------------------------------------------------------------------
+	// -----------------------------------------------------------------------
 
 	private static final String BARRAS = "*****************************************************************";
 	private static final String BIENVENIDO = "Bienvenido al juego:";
@@ -41,15 +41,13 @@ public class Juego implements Serializable {
 	private static final String ENEMIGO_VENCIDO = "Enemigo vencido!!";
 	private static final String PERDIDO = "Has perdido";
 	private static final String GANADO = "Has ganado";
-	private static final String VOLVER_A_JUGAR = "¿Volver a jugar? ";
-	private static final String FIN_JUEGO = "Fin del juego";
 
 	public Juego() {
 		enemigos = new ArrayList<Enemigo>();
-		//------------------NUEVO------------------------------------------------
+		// ------------------NUEVO------------------------------------------------
 		archivo = new File("mejorPuntuacion.txt");
 		partidasGuardadas = new File("partidaGuardada.txt");
-		//-----------------------------------------------------------------------
+		// -----------------------------------------------------------------------
 	}
 
 	public static String nombreAleatorio() {
@@ -63,12 +61,13 @@ public class Juego implements Serializable {
 		mostrarMejorPuntuacion(); // MEJOR PUNTUACION EN CASO DE QUE EXISTA
 		System.out.println();
 
-		//------------------NUEVO------------------------------------------------
+		// ------------------NUEVO------------------------------------------------
 		// CARGAR PARTIDA
-		if (cargarPartida() && Utilidades.getCharSiNo("¿Cargar partida guardada? (s/n): ", sc) == 's') {
+		if (partidasGuardadas.exists() && cargarPartida()
+				&& Utilidades.getCharSiNo("¿Cargar partida guardada? (s/n): ", sc) == 's') {
 			cargarPartida();
 			System.out.println("PARTIDA CARGADA: ");
-			//-----------------------------------------------------------------------
+			// -----------------------------------------------------------------------
 		} else {
 			// REINICIAMOS RONDAS Y ENEMIGOS
 			ronda = 0;
@@ -144,7 +143,7 @@ public class Juego implements Serializable {
 		System.out.println(jugador.getNombre() + CURA);
 	}
 
-	//------------------NUEVO-------------------------------------------------------------------------
+	// ------------------NUEVO-------------------------------------------------------------------------
 	public void guardarPartida() {
 		try {
 			// CREAMOS EL ARCHIVO EN CASO DE QUE NO EXISTA
@@ -161,9 +160,9 @@ public class Juego implements Serializable {
 		}
 
 	}
-	//-------------------------------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------------
 
-	//------------------NUEVO---------------------------------------------------------------------------
+	// ------------------NUEVO---------------------------------------------------------------------------
 	public boolean cargarPartida() {
 		Juego juegoActual = null;
 		try {
@@ -188,9 +187,9 @@ public class Juego implements Serializable {
 
 		return juegoActual != null;
 	}
-	//-------------------------------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------------
 
-	//------------------NUEVO---------------------------------------------------------------------------
+	// ------------------NUEVO---------------------------------------------------------------------------
 	public void borrarPartidaGuardada() {
 		try {
 			// CREAMOS UN OBJETO OUTPUTSTREAM PARA ESCRIBIR SOBRE EL FICHERO
@@ -203,62 +202,51 @@ public class Juego implements Serializable {
 			System.err.println("NO SE PUEDE CREAR ARCHIVO");
 		}
 	}
-	//-------------------------------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------------
 
 	public void enemigoAtaca() {
 		getSiguiente().atacar(jugador);
 		System.out.println(getSiguiente().getNombre() + ATACA + jugador.getNombre());
 	}
 
-	public void jugar(Scanner sc) {
-		char seguir = 0;
+	public void jugarPartida(Scanner sc) {
+		// JUGAMOS RONDAS HASTA MORIR, TERMINAR RONDAS O GUARDAR PARTIDA
+		int accion = 0;
 		do {
-			// INICIAMOS EL JUEGO RESETEANDO AL JUGADOR
-			iniciarJuego(sc);
-
-			// JUGAMOS RONDAS HASTA MORIR, TERMINAR RONDAS O GUARDAR PARTIDA
-			int accion = 0;
-			do {
-				mostrarRonda(); // MOSTRAMOS RONDA ACTUAL
-				accion = Utilidades.elegirEntre(ELIGE_ACCION, 1, 3, sc); // MOSTRAMOS MENÚ Y SELECCIONAMOS ACCION
-				switch (accion) {
-				case 1:
-					realizarAtaque();
-					break;
-				case 2:
-					realizarCura();
-					break;
-				case 3:
-					guardarPartida();
-				}
-				enemigoAtaca();
-				if (terminarRonda()) {
-					System.out.println(ENEMIGO_VENCIDO);
-				}
-				System.out.println();
-			} while (!esFinalJuego() && !jugador.muerto() && accion != 3);
-
-			// AL TERMINAR LA PARTIDA ELIMINAMOS LA PARTIDA GUARDADA
-			if (jugador.muerto() || esFinalJuego()) {
-				borrarPartidaGuardada();
+			mostrarRonda(); // MOSTRAMOS RONDA ACTUAL
+			accion = Utilidades.elegirEntre(ELIGE_ACCION, 1, 3, sc); // MOSTRAMOS MENÚ Y SELECCIONAMOS ACCION
+			switch (accion) {
+			case 1:
+				realizarAtaque();
+				break;
+			case 2:
+				realizarCura();
+				break;
+			case 3:
+				guardarPartida();
 			}
-
-			// EN CASO DE NO GUARDAR PARTIDA MOSTRAMOS RESULTADO Y GUARDAMOS PUNTUACION
-			if (accion != 3) {
-				System.out.println(jugador.muerto() ? PERDIDO : GANADO);
-				escribirMejorPuntuacion();
-			} else {
-				System.out.println("Partida guardada");
+			enemigoAtaca();
+			if (terminarRonda()) {
+				System.out.println(ENEMIGO_VENCIDO);
 			}
+			System.out.println();
+		} while (!esFinalJuego() && !jugador.muerto() && accion != 3);
 
-			seguir = Utilidades.getCharSiNo(VOLVER_A_JUGAR, sc);
-			jugador.resetear();
-		} while (seguir == 's' || seguir == 'S');
+		// AL TERMINAR LA PARTIDA ELIMINAMOS LA PARTIDA GUARDADA
+		if (jugador.muerto() || esFinalJuego()) {
+			borrarPartidaGuardada();
+		}
 
-		System.out.println(FIN_JUEGO);
+		// EN CASO DE NO GUARDAR PARTIDA MOSTRAMOS RESULTADO Y GUARDAMOS PUNTUACION
+		if (accion != 3) {
+			System.out.println(jugador.muerto() ? PERDIDO : GANADO);
+			escribirMejorPuntuacion();
+		} else {
+			System.out.println("Partida guardada");
+		}
 	}
 
-	//------------------NUEVO---------------------------------------------------------------------------
+	// ------------------NUEVO---------------------------------------------------------------------------
 	public void mostrarMejorPuntuacion() {
 		if (archivo.exists()) {
 			Scanner sc = null;
@@ -274,9 +262,9 @@ public class Juego implements Serializable {
 			}
 		}
 	}
-	//-------------------------------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------------
 
-	//------------------NUEVO---------------------------------------------------------------------------
+	// ------------------NUEVO---------------------------------------------------------------------------
 	public void escribirMejorPuntuacion() {
 		Scanner sc = null;
 		PrintWriter archivoEscribir = null;
@@ -314,7 +302,7 @@ public class Juego implements Serializable {
 		}
 
 	}
-	//-------------------------------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------------
 
 	public ArrayList<Enemigo> getEnemigos() {
 		return enemigos;
@@ -347,11 +335,11 @@ public class Juego implements Serializable {
 	public void setRonda(int ronda) {
 		this.ronda = ronda;
 	}
-
+	
 	public static String[] getNombreEnemigos() {
 		return nombreEnemigos;
 	}
-
+	
 	public static void setNombreEnemigos(String[] nombreEnemigos) {
 		Juego.nombreEnemigos = nombreEnemigos;
 	}
