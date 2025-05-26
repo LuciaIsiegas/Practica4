@@ -243,6 +243,7 @@ public class JuegoTest {
 		assertEquals(95, magoCreado.getVida());
 	}
 	
+	// METODO SIN 
 	@Test
 	void jugarPartidaTest() {
 		juego.nuevoMago(JUGADOR_TEST);
