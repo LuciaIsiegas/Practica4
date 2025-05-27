@@ -145,18 +145,27 @@ public class Juego implements Serializable {
 
 	// ------------------NUEVO-------------------------------------------------------------------------
 	public void guardarPartida() {
+		ObjectOutputStream ous = null;
 		try {
 			// CREAMOS EL ARCHIVO EN CASO DE QUE NO EXISTA
 			partidasGuardadas.createNewFile();
 
 			// CREAMOS UN OBJETO OUTPUTSTREAM PARA ESCRIBIR SOBRE EL FICHERO
-			ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(partidasGuardadas));
+			ous = new ObjectOutputStream(new FileOutputStream(partidasGuardadas));
 			ous.writeObject(this);
-
-			// CERRAMOS
-			ous.close();
+			
 		} catch (IOException e) {
 			System.err.println("NO SE PUEDE CREAR ARCHIVO");
+		} finally {
+			if (ous != null) {
+				// CERRAMOS
+				try {
+					ous.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
 		}
 
 	}
@@ -165,10 +174,10 @@ public class Juego implements Serializable {
 	// ------------------NUEVO---------------------------------------------------------------------------
 	public boolean cargarPartida() {
 		Juego juegoActual = null;
+		ObjectInputStream ois = null;
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(partidasGuardadas));
+			ois = new ObjectInputStream(new FileInputStream(partidasGuardadas));
 			juegoActual = (Juego) ois.readObject();
-			ois.close();
 
 			if (juegoActual != null) {
 				this.setRonda(juegoActual.getRonda());
@@ -183,6 +192,14 @@ public class Juego implements Serializable {
 			System.err.println("CLASE NO ENCONTRADA");
 		} catch (IOException e) {
 			System.err.println("Error");
+		} finally {
+			if (ois != null) {
+				try {
+					ois.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		return juegoActual != null;
