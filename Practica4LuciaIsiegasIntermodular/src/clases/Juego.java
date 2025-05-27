@@ -166,10 +166,10 @@ public class Juego implements Serializable {
 	//------------------NUEVO---------------------------------------------------------------------------
 	public boolean cargarPartida() {
 		Juego juegoActual = null;
+		ObjectInputStream ois = null;
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(partidasGuardadas));
+			ois = new ObjectInputStream(new FileInputStream(partidasGuardadas));
 			juegoActual = (Juego) ois.readObject();
-			ois.close();
 
 			if (juegoActual != null) {
 				this.setRonda(juegoActual.getRonda());
@@ -184,6 +184,14 @@ public class Juego implements Serializable {
 			System.err.println("CLASE NO ENCONTRADA");
 		} catch (IOException e) {
 			System.err.println("Error");
+		} finally {
+			if (ois != null) {
+				try {
+					ois.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		return juegoActual != null;
@@ -192,15 +200,24 @@ public class Juego implements Serializable {
 
 	//------------------NUEVO---------------------------------------------------------------------------
 	public void borrarPartidaGuardada() {
+		ObjectOutputStream ous = null;
 		try {
 			// CREAMOS UN OBJETO OUTPUTSTREAM PARA ESCRIBIR SOBRE EL FICHERO
-			ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(partidasGuardadas));
+			ous = new ObjectOutputStream(new FileOutputStream(partidasGuardadas));
 			ous.writeObject(null);
 
-			// CERRAMOS
-			ous.close();
+			
 		} catch (IOException e) {
 			System.err.println("NO SE PUEDE CREAR ARCHIVO");
+		} finally {
+			if (ous != null) {
+				// CERRAMOS
+				try {
+					ous.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	//-------------------------------------------------------------------------------------------------
@@ -270,7 +287,9 @@ public class Juego implements Serializable {
 			} catch (FileNotFoundException e) {
 				System.out.println("EL ARCHIVO NO EXISTE");
 			} finally {
-				sc.close();
+				if (sc != null) {
+					sc.close();
+				}
 			}
 		}
 	}
