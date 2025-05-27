@@ -32,7 +32,7 @@ public class JuegoTest {
 	static Enemigo enemigo;
 	static Enemigo enemigo2;
 	static Personaje jugador;
-//	static String[] nombreEnemigos = {"El Decapitador", "Furia Centinela", "Dama Tóxica"};
+	static String[] nombreEnemigos = {"El Decapitador", "Furia Centinela", "Dama Tóxica"};
 	static ArrayList<Enemigo> enemigos;
 	
 	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -46,7 +46,7 @@ public class JuegoTest {
 		enemigo = new Enemigo();
 		enemigo2 = new Enemigo();
 		enemigos = new ArrayList<Enemigo>();
-//		Juego.setNombreEnemigos(nombreEnemigos);
+		Juego.setNombreEnemigos(nombreEnemigos);
 		juego.setEnemigos(enemigos);
 		enemigos.add(enemigo);
 		enemigos.add(enemigo2);
@@ -69,23 +69,21 @@ public class JuegoTest {
 	
 	@Test
 	void nombreAleatorioTest() {
-		String nombre = Juego.nombreAleatorio();
-		assertNotNull(nombre);
-		assertTrue(nombre.length() > 0);
-//		for (int i = 0; i < 10; i++) {
-//			String nombreGenerado = Juego.nombreAleatorio();
-//			assertTrue(contieneNombre(nombreEnemigos, nombreGenerado));
-//		}
+
+		for (int i = 0; i < 10; i++) {
+			String nombreGenerado = Juego.nombreAleatorio();
+			assertTrue(contieneNombre(nombreEnemigos, nombreGenerado));
+		}
 	}
 	
-//	private boolean contieneNombre(String[] nombreEnemigos, String nombreGenerado) {
-//		for (String nombre : nombreEnemigos) {
-//			if (nombre.equals(nombreGenerado)) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
+	private boolean contieneNombre(String[] nombreEnemigos, String nombreGenerado) {
+		for (String nombre : nombreEnemigos) {
+			if (nombre.equals(nombreGenerado)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	@Test
 	void iniciarJuegoTest() {
@@ -245,21 +243,33 @@ public class JuegoTest {
 		assertEquals(95, magoCreado.getVida());
 	}
 	
-//	@Test
-//	void jugarTest() {
-//		String input = "1\nTest\n2\n1\nn\n";
-//	    Scanner sc = new Scanner(input);
+	@Test
+	void jugarPartidaTest() {
+		String input = "1\n";
+		Scanner sc = new Scanner(input);
+		
+		juego.nuevoGuerrero(JUGADOR_TEST);
+		Guerrero guerreroCreado = (Guerrero) juego.getJugador();
+		guerreroCreado.setVida(100);
+		guerreroCreado.setAtaque(100);
+		
+		enemigo.setVida(95);
+		enemigo.setDefensa(5);
+		
+		juego.jugarPartida(sc);
+		assertEquals(0, enemigo.getVida());
+//		// REALIZAR ATAQUE
+//		String input = "1";
+//		Scanner sc1 = new Scanner(input);
+//		realizarAtaqueTest();
+//		sc1.close();
 //		
-//		enemigo.setVida(100);
-//		enemigo.setDefensa(5);
-//		enemigo.setAtaque(10);
-//		
-//		juego.jugar(sc);
-//		juego.getJugador().setAtaque(100);
-//		juego.getJugador().setDefensa(5);
-//		
-//		assertEquals(5, enemigo.getVida());
-//	}
+//		// REALIZAR CURA
+//		input = "2";
+//		Scanner sc2 = new Scanner(input);
+//		realizarCuraTest();
+		
+	}
 	
 	@Test
     void escribirMejorPuntuacionTest() throws IOException {
