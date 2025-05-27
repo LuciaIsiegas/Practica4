@@ -244,6 +244,7 @@ public class JuegoTest {
 		assertEquals(95, magoCreado.getVida());
 	}
 	
+	// METODO SIN 
 	@Test
 	void jugarPartidaTest() {
 		String input = "n\n1\nTest\n2\n1\nn\n";

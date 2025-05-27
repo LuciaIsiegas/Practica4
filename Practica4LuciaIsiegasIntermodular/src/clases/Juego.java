@@ -162,10 +162,11 @@ public class Juego implements Serializable {
 				try {
 					ous.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				}
 			}
+			
 		}
 
 	}
@@ -197,7 +198,6 @@ public class Juego implements Serializable {
 				try {
 					ois.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -209,15 +209,24 @@ public class Juego implements Serializable {
 
 	// ------------------NUEVO---------------------------------------------------------------------------
 	public void borrarPartidaGuardada() {
+		ObjectOutputStream ous = null;
 		try {
 			// CREAMOS UN OBJETO OUTPUTSTREAM PARA ESCRIBIR SOBRE EL FICHERO
-			ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(partidasGuardadas));
+			ous = new ObjectOutputStream(new FileOutputStream(partidasGuardadas));
 			ous.writeObject(null);
 
-			// CERRAMOS
-			ous.close();
+			
 		} catch (IOException e) {
 			System.err.println("NO SE PUEDE CREAR ARCHIVO");
+		} finally {
+			if (ous != null) {
+				// CERRAMOS
+				try {
+					ous.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	// -------------------------------------------------------------------------------------------------
@@ -276,7 +285,9 @@ public class Juego implements Serializable {
 			} catch (FileNotFoundException e) {
 				System.out.println("EL ARCHIVO NO EXISTE");
 			} finally {
-				sc.close();
+				if (sc != null) {
+					sc.close();
+				}
 			}
 		}
 	}
