@@ -18,6 +18,7 @@ import java.util.Scanner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.EnableJUnit4MigrationSupport;
 
 import clases.Enemigo;
 import clases.Guerrero;
@@ -245,30 +246,19 @@ public class JuegoTest {
 	
 	@Test
 	void jugarPartidaTest() {
-		String input = "1\n";
+		String input = "n\n1\nTest\n2\n1\nn\n";
 		Scanner sc = new Scanner(input);
 		
 		juego.nuevoGuerrero(JUGADOR_TEST);
 		Guerrero guerreroCreado = (Guerrero) juego.getJugador();
-		guerreroCreado.setVida(100);
 		guerreroCreado.setAtaque(100);
 		
 		enemigo.setVida(95);
 		enemigo.setDefensa(5);
 		
 		juego.jugarPartida(sc);
-		assertEquals(0, enemigo.getVida());
-//		// REALIZAR ATAQUE
-//		String input = "1";
-//		Scanner sc1 = new Scanner(input);
-//		realizarAtaqueTest();
-//		sc1.close();
-//		
-//		// REALIZAR CURA
-//		input = "2";
-//		Scanner sc2 = new Scanner(input);
-//		realizarCuraTest();
 		
+		assertEquals(0, enemigo.getVida());
 	}
 	
 	@Test
@@ -290,9 +280,7 @@ public class JuegoTest {
 	
 	@Test
 	void mostrarMejorPuntuacionArchivoNoExisteTest() {
-        if (archivoPuntuacion.exists()) {
-            archivoPuntuacion.delete();
-        }
+        assertFalse(archivoPuntuacion.exists());
         
         juego.mostrarMejorPuntuacion();
         
