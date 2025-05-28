@@ -52,13 +52,13 @@ public class JuegoTest {
 		enemigos.add(enemigo);
 		enemigos.add(enemigo2);
 		
-		 System.setOut(new PrintStream(outContent));
-	     archivoPuntuacion = new File("mejorPuntuacion.txt");
+		System.setOut(new PrintStream(outContent));
+	    archivoPuntuacion = new File("mejorPuntuacion.txt");
 		
 	}
 	
 	@AfterEach
-	void eleminar() throws IOException {
+	void eliminar() throws IOException {
 //		new File("mejorPuntuacion.txt").delete();
         new File("partidaGuardada.txt").delete();
         
@@ -219,6 +219,7 @@ public class JuegoTest {
 		assertEquals(2, juegoCargado.getEnemigos().size());
 	}
 	
+	
 	@Test
 	void borrarPartidaGuardadTest() {
 		juego.setnRondas(1);
@@ -244,7 +245,6 @@ public class JuegoTest {
 		assertEquals(95, magoCreado.getVida());
 	}
 	
-	// METODO SIN 
 	@Test
 	void jugarPartidaTest() {
 		String input = "n\n1\nTest\n2\n1\nn\n";

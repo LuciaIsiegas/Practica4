@@ -10,6 +10,7 @@ import clases.Mago;
 
 public class MagoTest {
 
+	private static final String NOMBRE_TEST = "Pepa";
 	static Mago mago;
 	static Mago mago2;
 	static Mago mago3;
@@ -20,15 +21,15 @@ public class MagoTest {
 	
 	@BeforeEach
 	void crearPersonaje() {
-		mago = new Mago("Pepa", 100);
+		mago = new Mago(NOMBRE_TEST, 100);
 		mago.setVida(80);
 		mago.setMagia(3);
 		
-		mago2 = new Mago("Juan", 100);
+		mago2 = new Mago(NOMBRE_TEST, 100);
 		mago2.setVida(80);
 		mago2.setMagia(0);
 		
-		mago3 = new Mago("Pepe", 15);
+		mago3 = new Mago(NOMBRE_TEST, 15);
 		mago3.setVida(10);
 		mago3.setMagia(5);
 		
@@ -88,5 +89,15 @@ public class MagoTest {
 		mago.resetear();
 		assertEquals(100, mago.getVida());
 		assertEquals(10, mago.getMagia());
+	}
+	
+	@Test
+	void toStringTest() {
+		mago.setNombre(NOMBRE_TEST);
+		mago.setVidaInicial(100);
+		mago.setVida(70);
+		mago.setMagia(8);
+		
+		assertEquals("Pepa => Vida: 70/100; Magia: 8", mago.toString());
 	}
 }
